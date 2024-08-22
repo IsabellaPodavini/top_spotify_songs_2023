@@ -44,16 +44,9 @@ def clean_data(df):
     cleaned_df['in_shazam_charts'] = cleaned_df['in_shazam_charts'].fillna(cleaned_df['in_shazam_charts'].mode()[0], inplace=True)
     cleaned_df['key'] = cleaned_df['in_shazam_charts'].fillna(cleaned_df['key'].mode()[0], inplace=True)
     
-    #Incorrect values
-    cleaned_df['streams'] = pd.to_numeric(cleaned_df['streams'], errors='coerce')
-    mean_streams = cleaned_df['streams'].mean()
-    cleaned_df['streams'].fillna(mean_streams, inplace=True)
-    
-    cleaned_df['in_deezer_playlists'] = pd.to_numeric(cleaned_df['in_deezer_playlists'], errors='coerce')
-    mean_in_deezer_playlists = cleaned_df['in_deezer_playlists'].mean()
-    cleaned_df['in_deezer_playlists'].fillna(mean_in_deezer_playlists, inplace=True)
-    
-    cleaned_df=cleaned_df.replace('#NAME?', np.nan)
+    cleaned_df = cleaned_df[cleaned_df['streams'] !='BPM110KeyAModeMajorDanceability53Valence75Energy69Acousticness7Instrumentalness0Liveness17Speechiness3']
+    cleaned_df['streams'] = cleaned_df['streams'].astype('int64')
+    cleaned_df['in_deezer_playlists'] = cleaned_df['in_deezer_playlists'].str.replace(',','').astype('int64')
     
     return cleaned_df
 
@@ -105,7 +98,7 @@ elif current_tab == "🗑️ Cleaning":
 
     cleaned_df = clean_data(spotify_songs_df)
 
-    tab1, tab2, tab3, tab4 = st.tabs(["NA values", "Cleaning", "-", "-"]) 
+    tab1, tab2 = st.tabs(["NA values", "Cleaning"]) 
     
     with tab1:
     #calculates the count of missing values and the percentage of missing values for each variable
@@ -151,7 +144,7 @@ elif current_tab == "🔗 Correlation":
     
     # Heatmap 
     plt.figure(figsize=(8, 6))
-    sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
+    sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', center=0)
     plt.title('Correlation Matrix of Audio Features')
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
@@ -166,7 +159,6 @@ elif current_tab == "🔗 Correlation":
     * Valence - Danceability: 0.41
     """)
     
-
     fig_1 = plt.figure(figsize=(20, 16))
     ax_1 = fig_1.add_subplot(2, 2, 1)
     ax_2 = fig_1.add_subplot(2, 2, 2)
@@ -187,3 +179,52 @@ elif current_tab == "🔗 Correlation":
     st.markdown('''
         It can be seen that "acousticness_%" and "energy_%" have a negative correlation, indicating that acoustic songs tend to have a lower energy level and also that "valence_%" and "energy_%" have a strong positive correlation, indicating that songs with a high positivity level also tend to have a high energy level.    
     ''')
+
+############
+#EDA
+############
+elif current_tab == "📊 Exploratory Data Analysis": 
+    st.title("Exploratory Data Analysis")
+    
+    st.write('First of all, I offer a complementary view of the temporal distribution of music, exploring both the production and popularity of songs over time.')
+    
+    #tab1, tab2 = st.tabs(["Number of songs in each year", "Distribution of Streams in different Months"]) 
+    
+    cleaned_df = clean_data(spotify_songs_df)
+    
+    #with tab1:
+    st.write('The following graph represents the trend in the number of songs released each year in the dataset. Each bar corresponds to a specific year and its height indicates how many songs were released in that year. This allows us to observe how music production has varied over time, highlighting any trends. By analyzing this graph, we can draw conclusions about the development and evolution of music over time, noting a greater trend in recent years.')
+    count_by_year = cleaned_df['released_year'].value_counts().sort_index()
+    plt.figure(figsize=(10,6))
+    count_by_year.plot(kind='bar', color='orange')
+    plt.title('Number of songs released by year')
+    plt.xlabel('Released year')
+    plt.ylabel('Number of songs')
+    plt.xticks(rotation=45)
+    plt.grid(axis='y', linestyle='--', alpha=0.7) #grid only for axis y, style: fotted line, trasparency: 70%
+    plt.tight_layout() #Automatically adjusts the position of the graph axes so that they do not overlap and the content is evenly distributed
+    st.pyplot(plt.gcf())
+    
+    #with tab2:
+    st.write('We can also examine the distribution of music streams in different months of the year. Using this dataset, this bar graph shows how the number of streams varies according to the month of release. Each bar represents a specific month and its height indicates the average amount of streams received by the songs released in that month. Through this graph, we can identify any seasonality or trends that affect the popularity of songs throughout the year')
+    MonthDict={ 1 : "January",
+            2 : "February",
+            3 : "March",
+            4 : "April",
+            5 : "May",
+            6 : "June",
+            7 : "July",
+            8 : "August",
+            9 : "September",
+           10 : "October",
+           11 : "November",
+           12 : "December"
+        }
+    #cleaned_df['month_name'] = cleaned_df['released_month'].map(MonthDict)
+    #order = list(MonthDict.values())
+    sns.barplot(x='released_month', y='streams', data=cleaned_df, palette="coolwarm")
+    plt.title('Distribution of Streams Across Different Months')
+    plt.xlabel('Month')
+    plt.ylabel('Streams')
+    st.pyplot(plt.gcf())
+    
