@@ -166,80 +166,24 @@ elif current_tab == "🔗 Correlation":
     * Valence - Danceability: 0.41
     """)
     
-    ##########
-    #Function
-    ##########   
-    #Define the plot_scatter function 
-    def plot_scatter(cleaned_df):
-        plt.figure(figsize=(6, 3))
-        sns.set_palette("husl")
-        sns.scatterplot(data=cleaned_df, x='service_fee', y='price', color='purple')
-        plt.xlabel('Service Fee')
-        plt.ylabel('Price')
-        plt.title('Relationship between Service Fee and Price')
-        st.pyplot(plt.gcf())  # 
 
-    # Initializes or updates the state when the button is pressed
-    if 'show_scatter' not in st.session_state:
-        st.session_state.show_scatter = False
+    fig_1 = plt.figure(figsize=(20, 16))
+    ax_1 = fig_1.add_subplot(2, 2, 1)
+    ax_2 = fig_1.add_subplot(2, 2, 2)
 
-    if st.button('Click to see the Scatterplot'):
-        st.session_state.show_scatter = not st.session_state.show_scatter
+    ax_1.scatter(cleaned_df['energy_%'], cleaned_df['acousticness_%'])
+    ax_1.title.set_text('Relation between Energy - Acousticness')
+    ax_1.set_xlabel('Energy %')
+    ax_1.set_ylabel('Acousticness %')
 
-    
-    # Shows or hides the graph based on the state of the session
-    if st.session_state.show_scatter:
-        plot_scatter(cleaned_df)  
-    
-    st.divider() 
-    st.write('To observe how the main categorical variables relate to each other, contingency tables were used, which help identify areas of higher or lower frequency of combinations between types of variables:')
+    ax_2.scatter(cleaned_df['energy_%'], cleaned_df['valence_%'])
+    ax_2.title.set_text('Relation between Energy - Valence')
+    ax_2.set_xlabel('Energy %')
+    ax_2.set_ylabel('Valence %')
 
-    tab1, tab2, tab3 = st.tabs(["Acousticness vs Energy", "Valence vs Energy", "Valence vs Danceability"]) 
-    
-    with tab1:
-        contingency_table = pd.crosstab(cleaned_df['acousticness_%'], cleaned_df['energy_%'])
-        plt.figure(figsize=(8, 6))
-        sns.heatmap(contingency_table, annot=True, cmap='BuPu', fmt='d')
-        plt.xlabel('Acousticness')
-        plt.ylabel('Energy')
-        st.pyplot(plt.gcf())
-            
-        st.markdown('''
-                    It can be seen that "acousticness_%" and "energy_%" have a negative correlation, so it indicates that acoustic songs tend to have a lower energy level.
-                    ''')
-    
-    with tab2:
-        contingency_table = pd.crosstab(cleaned_df['valence_%'], cleaned_df['energy_%'])
-        plt.figure(figsize=(8, 6))
-        sns.heatmap(contingency_table, annot=True, cmap='BuPu', fmt='d')
-        plt.xlabel('Valence')
-        plt.ylabel('Energy')
-        st.pyplot(plt.gcf())
-            
-        st.markdown('''
-                    It can be seen that "valence_%" and "energy_%" have a strong positive correlation, so songs with a high positivity level also tend to have a high energy level
-                    ''')
-    
-    with tab3:
-        contingency_table = pd.crosstab(cleaned_df['valence_%'], cleaned_df['danceability_%'])
-        plt.figure(figsize=(8, 6))
-        sns.heatmap(contingency_table, annot=True, cmap='BuPu', fmt='d')
-        plt.xlabel('Valence')
-        plt.ylabel('Danceability')
-        st.pyplot(plt.gcf())
-            
-        st.markdown('''
-                    It can be seen that "valence_%" and "danceability_%" have a strong positive correlation, so songs with a high positivity level also tend to have a high danceability level
-                    ''')
-    
-    #fig_1 = plt.figure(figsize=(20, 16))
-    #ax_1 = fig_1.add_subplot(2, 2, 1)
-    #ax_2 = fig_1.add_subplot(2, 2, 2)
-        
-    #ax_1.scatter(cleaned_df['energy_%'],cleaned_df['acousticness_%'])
-    #ax_1.title.set_text('Relation between Energy - Acousticness')
-        
-    #ax_2.scatter(cleaned_df['energy_%'],cleaned_df['valence_%'])
-    #ax_2.title.set_text('Relation between Energy - Valence')
-    
-    #st.pyplot(fig_1)
+
+    st.pyplot(fig_1)
+
+    st.markdown('''
+        It can be seen that "acousticness_%" and "energy_%" have a negative correlation, indicating that acoustic songs tend to have a lower energy level and also that "valence_%" and "energy_%" have a strong positive correlation, indicating that songs with a high positivity level also tend to have a high energy level.    
+    ''')
