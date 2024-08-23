@@ -228,3 +228,34 @@ elif current_tab == "📊 Exploratory Data Analysis":
     plt.ylabel('Streams')
     st.pyplot(plt.gcf())
     
+    #########################à
+    st.write('The number of artists in this dataset is very large, the top 10 who made a larger number of songs are:')
+    artist_counts = spotify_songs_df['artist(s)_name'].value_counts().head(10)
+    plt.figure(figsize=(12,6))
+    sns.barplot(x=artist_counts.values,y=artist_counts.index,palette='viridis')
+    plt.xlabel('No. of songs')
+    plt.ylabel('Artist(s)')
+    plt.title('Top 10 artist with most number of songs')
+    st.pyplot(plt.gcf())
+    st.write('The singer(s) with the highest number is Taylor Swift')
+    
+    ##############################
+    st.write('The top 10 songs with the most streams are:')
+    song_streamh = spotify_songs_df[['track_name','artist(s)_name','released_year','streams']].\
+               sort_values(by = 'streams',ascending=False)
+    song_count = song_streamh.head(10)
+    plt.figure(figsize=(12,6))
+    sns.barplot(x=song_count.streams,y=song_count.track_name,palette='magma')
+    plt.xlabel('Streams(in billions)')
+    plt.ylabel('Track Name')
+    plt.title('Top 10 song with most stream hour')
+    st.pyplot(plt.gcf())
+    
+    st.write('The song with highest strems is:')
+    song_streamh.head(1)
+    
+    st.write('The song with lowest streams is:')
+    song_streamh.tail(1)
+    
+    ##############################
+    
