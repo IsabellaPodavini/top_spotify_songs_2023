@@ -192,7 +192,6 @@ elif current_tab == "📊 Exploratory Data Analysis":
     
     cleaned_df = clean_data(spotify_songs_df)
     
-    #with tab1:
     st.write('The following graph represents the trend in the number of songs released each year in the dataset. Each bar corresponds to a specific year and its height indicates how many songs were released in that year. This allows us to observe how music production has varied over time, highlighting any trends. By analyzing this graph, we can draw conclusions about the development and evolution of music over time, noting a greater trend in recent years.')
     count_by_year = cleaned_df['released_year'].value_counts().sort_index()
     plt.figure(figsize=(10,6))
@@ -205,7 +204,7 @@ elif current_tab == "📊 Exploratory Data Analysis":
     plt.tight_layout() #Automatically adjusts the position of the graph axes so that they do not overlap and the content is evenly distributed
     st.pyplot(plt.gcf())
     
-    #with tab2:
+    ##############################
     st.write('We can also examine the distribution of music streams in different months of the year. Using this dataset, this bar graph shows how the number of streams varies according to the month of release. Each bar represents a specific month and its height indicates the average amount of streams received by the songs released in that month. Through this graph, we can identify any seasonality or trends that affect the popularity of songs throughout the year')
     MonthDict={ 1 : "January",
             2 : "February",
@@ -230,7 +229,7 @@ elif current_tab == "📊 Exploratory Data Analysis":
     
     #########################à
     st.write('The number of artists in this dataset is very large, the top 10 who made a larger number of songs are:')
-    artist_counts = spotify_songs_df['artist(s)_name'].value_counts().head(10)
+    artist_counts = cleaned_df['artist(s)_name'].value_counts().head(10)
     plt.figure(figsize=(12,6))
     sns.barplot(x=artist_counts.values,y=artist_counts.index,palette='viridis')
     plt.xlabel('No. of songs')
@@ -241,7 +240,7 @@ elif current_tab == "📊 Exploratory Data Analysis":
     
     ##############################
     st.write('The top 10 songs with the most streams are:')
-    song_streamh = spotify_songs_df[['track_name','artist(s)_name','released_year','streams']].\
+    song_streamh = cleaned_df[['track_name','artist(s)_name','released_year','streams']].\
                sort_values(by = 'streams',ascending=False)
     song_count = song_streamh.head(10)
     plt.figure(figsize=(12,6))
@@ -251,11 +250,40 @@ elif current_tab == "📊 Exploratory Data Analysis":
     plt.title('Top 10 song with most stream hour')
     st.pyplot(plt.gcf())
     
-    st.write('The song with highest strems is:')
-    song_streamh.head(1)
-    
-    st.write('The song with lowest streams is:')
-    song_streamh.tail(1)
+    st.write('The song with highest strems is: Blinding Lights. The song with lowest streams is: Que Vuelvas')
     
     ##############################
+    st.write('Each song can be played by multiple artists')
+    artist_count_counts = cleaned_df['artist_count'].value_counts()
+    plt.figure(figsize=(10, 6))
+    plt.bar(artist_count_counts.index, artist_count_counts.values, color='blue')
+    plt.xlabel('Number of Artists Involved')
+    plt.ylabel('Number of Songs')
+    plt.title('Distribution of Songs by Number of Artists Involved')
+    plt.xticks(artist_count_counts.index)
+    st.pyplot(plt.gcf())
     
+    st.write('In a song, the maximum number of artists involved is 8 and the minimum number is 1. It can be seen from the graph that most songs involve only one artist.')
+    
+    ################################
+    st.write('We can now analyze some important tools ')
+    
+    tab1, tab2, tab3 =st.tabs(["Distribution of BPM", "Distribution of Keys", "Distribution of Mode"])
+    with tab1:
+        plt.figure(figsize=(8, 6))
+        sns.histplot(cleaned_df['bpm'], bins=20, kde=True, color='skyblue')
+        plt.xlabel('BPM', fontsize=14)
+        plt.ylabel('Count', fontsize=14)
+        st.pyplot(plt.gcf())
+    
+    with tab2:
+        plt.figure(figsize=(8, 6))
+        sns.countplot(x="key", data=cleaned_df, palette="Set2")
+        plt.xlabel("Keys", fontsize=14)
+        plt.ylabel("Count", fontsize=14)
+        st.pyplot(plt.gcf())
+    
+    with tab3:
+        cleaned_df['mode'].value_counts().plot.pie(autopct = '%1.2f%%', legend = True);
+        plt.tight_layout()
+        st.pyplot(plt.gcf())
