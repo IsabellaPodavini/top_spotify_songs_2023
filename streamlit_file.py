@@ -219,9 +219,9 @@ elif current_tab == "📊 Exploratory Data Analysis":
            11 : "November",
            12 : "December"
         }
-    #cleaned_df['month_name'] = cleaned_df['released_month'].map(MonthDict)
-    #order = list(MonthDict.values())
-    sns.barplot(x='released_month', y='streams', data=cleaned_df, palette="coolwarm")
+    cleaned_df['month_name'] = cleaned_df['released_month'].map(MonthDict)
+    order = list(MonthDict.values())
+    sns.barplot(x='month_name', y='streams', data=cleaned_df, legend=False)
     plt.title('Distribution of Streams Across Different Months')
     plt.xlabel('Month')
     plt.ylabel('Streams')
@@ -231,7 +231,7 @@ elif current_tab == "📊 Exploratory Data Analysis":
     st.write('The number of artists in this dataset is very large, the top 10 who made a larger number of songs are:')
     artist_counts = cleaned_df['artist(s)_name'].value_counts().head(10)
     plt.figure(figsize=(12,6))
-    sns.barplot(x=artist_counts.values,y=artist_counts.index,palette='viridis')
+    sns.barplot(x=artist_counts.values, y=artist_counts.index, hue=artist_counts.index, palette='viridis', legend=False)
     plt.xlabel('No. of songs')
     plt.ylabel('Artist(s)')
     plt.title('Top 10 artist with most number of songs')
@@ -268,22 +268,86 @@ elif current_tab == "📊 Exploratory Data Analysis":
     ################################
     st.write('We can now analyze some important tools ')
     
-    tab1, tab2, tab3 =st.tabs(["Distribution of BPM", "Distribution of Keys", "Distribution of Mode"])
-    with tab1:
-        plt.figure(figsize=(8, 6))
-        sns.histplot(cleaned_df['bpm'], bins=20, kde=True, color='skyblue')
-        plt.xlabel('BPM', fontsize=14)
-        plt.ylabel('Count', fontsize=14)
-        st.pyplot(plt.gcf())
+    #tab1, tab2, tab3, tab4 =st.tabs(["Distribution of BPM", "Distribution of Keys", "Distribution of Mode", "Streams Distribution by Key and Mode"])
+    #with tab1:
+    plt.figure(figsize=(8, 6))
+    sns.histplot(cleaned_df['bpm'], bins=20, kde=True, color='skyblue')
+    plt.xlabel('BPM', fontsize=10)
+    plt.ylabel('Count', fontsize=10)
+    st.pyplot(plt.gcf())
     
-    with tab2:
-        plt.figure(figsize=(8, 6))
-        sns.countplot(x="key", data=cleaned_df, palette="Set2")
-        plt.xlabel("Keys", fontsize=14)
-        plt.ylabel("Count", fontsize=14)
-        st.pyplot(plt.gcf())
+    #with tab2:
+    plt.figure(figsize=(8, 6))
+    sns.countplot(x="key", data=cleaned_df, hue="key", palette="Set2", legend=False)
+    plt.xlabel("Key", fontsize=10)
+    plt.ylabel("Count", fontsize=10)
+    st.pyplot(plt.gcf())
     
-    with tab3:
-        cleaned_df['mode'].value_counts().plot.pie(autopct = '%1.2f%%', legend = True);
-        plt.tight_layout()
-        st.pyplot(plt.gcf())
+    #with tab3:
+    cleaned_df['mode'].value_counts().plot.pie(autopct = '%1.2f%%', legend = True);
+    st.pyplot(plt.gcf())
+
+    #############################
+    plt.figure(figsize=(10, 6))
+    sns.histplot(cleaned_df['danceability_%'], bins=30, kde=True, color='skyblue')
+    plt.xlabel('Danceability')
+    plt.ylabel('Frequency')
+    plt.title('Distribution of Danceability')
+    plt.grid(True)
+    st.pyplot(plt.gcf())
+    
+    ######################
+    top_danceable_songs = cleaned_df.nlargest(3, 'danceability_%')[['track_name', 'artist(s)_name', 'danceability_%']]
+    top_danceable_songs
+    
+    ###########################
+    plt.figure(figsize=(10, 6))
+    sns.histplot(cleaned_df['valence_%'], bins=30, kde=True, color='lightcoral')
+    plt.xlabel('Valence')
+    plt.ylabel('Frequency')
+    plt.title('Distribution of Valence')
+    plt.grid(True)
+    st.pyplot(plt.gcf())
+    
+    ############################
+    top_positive_songs = cleaned_df.nlargest(3, 'valence_%')[['track_name', 'artist(s)_name', 'valence_%']]
+    top_positive_songs
+    
+    ###############################
+    plt.figure(figsize=(10, 6))
+    sns.histplot(cleaned_df['energy_%'], bins=30, kde=True, color='lightcoral')
+    plt.xlabel('Energy')
+    plt.ylabel('Frequency')
+    plt.title('Distribution of Energy')
+    plt.grid(True)
+    st.pyplot(plt.gcf())
+    
+    ##############################
+    top_energetic_songs = cleaned_df.nlargest(3, 'energy_%')[['track_name', 'artist(s)_name', 'energy_%']]
+    top_energetic_songs
+    
+    ###############################
+    plt.figure(figsize=(10, 6))
+    sns.histplot(cleaned_df['acousticness_%'], bins=30, kde=True, color='lightcoral')
+    plt.xlabel('Acousticness')
+    plt.ylabel('Frequency')
+    plt.title('Distribution of Acousticness')
+    plt.grid(True)
+    st.pyplot(plt.gcf())
+    
+    ##################################
+    top_acoustic_songs = cleaned_df.nlargest(3, 'acousticness_%')[['track_name', 'artist(s)_name', 'acousticness_%']]
+    top_acoustic_songs
+    
+    #############################
+    plt.figure(figsize=(10, 6))
+    sns.histplot(cleaned_df['instrumentalness_%'], bins=30, kde=True, color='lightcoral')
+    plt.xlabel('Instrumentalness')
+    plt.ylabel('Frequency')
+    plt.title('Distribution of Instrumentalness')
+    plt.grid(True)
+    st.pyplot(plt.gcf())
+    
+    ##########################
+    top_instrumental_songs = cleaned_df.nlargest(3, 'instrumentalness_%')[['track_name', 'artist(s)_name', 'instrumentalness_%']]
+    top_instrumental_songs    
