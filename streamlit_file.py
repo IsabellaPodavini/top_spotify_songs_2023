@@ -5,10 +5,8 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-#import folium 
 import io
-from io import BytesIO
-#from streamlit_folium import st_folium
+from wordcloud import WordCloud
 
 ##################
 #Importing Dataset
@@ -288,66 +286,140 @@ elif current_tab == "📊 Exploratory Data Analysis":
     st.pyplot(plt.gcf())
 
     #############################
-    plt.figure(figsize=(10, 6))
-    sns.histplot(cleaned_df['danceability_%'], bins=30, kde=True, color='skyblue')
-    plt.xlabel('Danceability')
-    plt.ylabel('Frequency')
-    plt.title('Distribution of Danceability')
-    plt.grid(True)
+    st.divider()
+    st.subheader("The musical characteristics")
+    
+    st.write('We can also analyze top songs according to the trend of musical characteristics, namely: danceability, valence, energy, acousticness, instrumentalness, liveness and finally speechiness.')
+    
+    tab1, tab2, tab3,tab4, tab5, tab6, tab7 = st.tabs(["Distribution of Danceability", "Distribution of Valence", "Distribution of energy", "Distribution of Acousticness", "Distribution of Instrumentalness", "Distribution of Liveness", "Distribution of Speechiness"])
+    
+    with tab1:
+        plt.figure(figsize=(10, 6))
+        sns.histplot(cleaned_df['danceability_%'], bins=30, kde=True, color='skyblue')
+        plt.xlabel('Danceability')
+        plt.ylabel('Frequency')
+        plt.title('Distribution of Danceability')
+        plt.grid(True)
+        st.pyplot(plt.gcf())
+        
+        top_danceable_songs = cleaned_df.nlargest(3, 'danceability_%')[['track_name', 'artist(s)_name', 'danceability_%']]
+        top_danceable_songs
+        
+        st.write('These are the top3 songs with higher percentage of danceability, that indicate how suitable the song is for dancing')
+        
+    with tab2:
+        plt.figure(figsize=(10, 6))
+        sns.histplot(cleaned_df['valence_%'], bins=30, kde=True, color='lightcoral')
+        plt.xlabel('Valence')
+        plt.ylabel('Frequency')
+        plt.title('Distribution of Valence')
+        plt.grid(True)
+        st.pyplot(plt.gcf())
+        
+        top_positive_songs = spotify_songs_df.nlargest(3, 'valence_%')[['track_name', 'artist(s)_name', 'valence_%']]
+        top_positive_songs
+        
+        st.write('These are the top3 songs with higher percentage of Valence, that indicate the positivity of the song''s musical content')
+        
+    with tab3:
+        plt.figure(figsize=(10, 6))
+        sns.histplot(cleaned_df['energy_%'], bins=30, kde=True, color='lightgreen')
+        plt.xlabel('Energy')
+        plt.ylabel('Frequency')
+        plt.title('Distribution of Energy')
+        plt.grid(True)
+        st.pyplot(plt.gcf())
+        
+        top_energetic_songs = cleaned_df.nlargest(3, 'energy_%')[['track_name', 'artist(s)_name', 'energy_%']]
+        top_energetic_songs
+        
+        st.write('These are the top3 songs with higher percentage of Energy, that indicate the perceived energy level of the song')
+    
+    with tab4:
+        plt.figure(figsize=(10, 6))
+        sns.histplot(cleaned_df['acousticness_%'], bins=30, kde=True, color='orange')
+        plt.xlabel('Acousticness')
+        plt.ylabel('Frequency')
+        plt.title('Distribution of Acousticness')
+        plt.grid(True)
+        st.pyplot(plt.gcf())
+        
+        top_acoustic_songs = cleaned_df.nlargest(3, 'acousticness_%')[['track_name', 'artist(s)_name', 'acousticness_%']]
+        top_acoustic_songs
+        
+        st.write('There are the top3 songs with higher percentage of Acousticness, that indicated the amount of acoustic sound in the song')
+
+    with tab5:
+        plt.figure(figsize=(10, 6))
+        sns.histplot(cleaned_df['instrumentalness_%'], bins=30, kde=True, color='yellow')
+        plt.xlabel('Instrumentalness')
+        plt.ylabel('Frequency')
+        plt.title('Distribution of Instrumentalness')
+        plt.grid(True)
+        st.pyplot(plt.gcf())
+        
+        top_instrumental_songs = cleaned_df.nlargest(3, 'instrumentalness_%')[['track_name', 'artist(s)_name', 'instrumentalness_%']]
+        top_instrumental_songs
+        
+        st.write('There are the top3 songs with higher percentage of Instrumentalness, that indicated the amount of instrumental content in the song')
+
+    with tab6:
+        plt.figure(figsize=(10, 6))
+        sns.histplot(cleaned_df['liveness_%'], bins=30, kde=True, color='red')
+        plt.xlabel('Liveness')
+        plt.ylabel('Frequency')
+        plt.title('Distribution of Liveness')
+        plt.grid(True)
+        st.pyplot(plt.gcf())
+        
+        top_liveness_songs = cleaned_df.nlargest(3, 'liveness_%')[['track_name', 'artist(s)_name', 'liveness_%']]
+        top_liveness_songs
+        
+        st.write('There are the top3 songs with higher percentage of Liveness, that indicated the presence of live performance elements')
+        
+    with tab7:
+        plt.figure(figsize=(10, 6))
+        sns.histplot(cleaned_df['speechiness_%'], bins=30, kde=True, color='purple')
+        plt.xlabel('Speechiness')
+        plt.ylabel('Frequency')
+        plt.title('Distribution of Speechiness')
+        plt.grid(True)
+        st.pyplot(plt.gcf())
+        
+        top_speech_songs = cleaned_df.nlargest(3, 'speechiness_%')[['track_name', 'artist(s)_name', 'speechiness_%']]
+        top_speech_songs
+        
+        st.write('There are the top3 songs with higher percentage of Speechiness, that indicated the amount of spoken words in the song')
+
+    
+
+    ##################################### WordCloud graphs
+
+    st.divider()
+    st.subheader("WordCloud graph on dataset's note")
+    
+    words_in_title = ''.join(spotify_songs_df['track_name'].astype(str))
+    wordcloud = WordCloud(width=1200, height=800, min_font_size=10, max_font_size=150).generate(words_in_title)
+    plt.figure(figsize=(10, 10))
+    plt.imshow(wordcloud, interpolation='bilinear') 
+    plt.axis('off')
+    plt.title('Most Common Words in song titles')
+    plt.show()
     st.pyplot(plt.gcf())
+    st.write('This graph is a WordCloud, which is a visual way to represent the most frequent words in a given dataset. In this case, the WordCloud was created based on the variable "track_name". This variable contains information about the songs, and the largest words in the are those that appear most frequently in the notes. This can help to quickly identify the most common themes or terms associated with the music.')
+
+
+#########
+#Modeling
+#########
+elif current_tab == "🤖 Modeling with ML algorithms":
+    st.title("Modeling with Machine Learning algorithms")
     
-    ######################
-    top_danceable_songs = cleaned_df.nlargest(3, 'danceability_%')[['track_name', 'artist(s)_name', 'danceability_%']]
-    top_danceable_songs
-    
-    ###########################
-    plt.figure(figsize=(10, 6))
-    sns.histplot(cleaned_df['valence_%'], bins=30, kde=True, color='lightcoral')
-    plt.xlabel('Valence')
-    plt.ylabel('Frequency')
-    plt.title('Distribution of Valence')
-    plt.grid(True)
-    st.pyplot(plt.gcf())
-    
-    ############################
-    top_positive_songs = cleaned_df.nlargest(3, 'valence_%')[['track_name', 'artist(s)_name', 'valence_%']]
-    top_positive_songs
-    
-    ###############################
-    plt.figure(figsize=(10, 6))
-    sns.histplot(cleaned_df['energy_%'], bins=30, kde=True, color='lightcoral')
-    plt.xlabel('Energy')
-    plt.ylabel('Frequency')
-    plt.title('Distribution of Energy')
-    plt.grid(True)
-    st.pyplot(plt.gcf())
-    
-    ##############################
-    top_energetic_songs = cleaned_df.nlargest(3, 'energy_%')[['track_name', 'artist(s)_name', 'energy_%']]
-    top_energetic_songs
-    
-    ###############################
-    plt.figure(figsize=(10, 6))
-    sns.histplot(cleaned_df['acousticness_%'], bins=30, kde=True, color='lightcoral')
-    plt.xlabel('Acousticness')
-    plt.ylabel('Frequency')
-    plt.title('Distribution of Acousticness')
-    plt.grid(True)
-    st.pyplot(plt.gcf())
-    
-    ##################################
-    top_acoustic_songs = cleaned_df.nlargest(3, 'acousticness_%')[['track_name', 'artist(s)_name', 'acousticness_%']]
-    top_acoustic_songs
-    
-    #############################
-    plt.figure(figsize=(10, 6))
-    sns.histplot(cleaned_df['instrumentalness_%'], bins=30, kde=True, color='lightcoral')
-    plt.xlabel('Instrumentalness')
-    plt.ylabel('Frequency')
-    plt.title('Distribution of Instrumentalness')
-    plt.grid(True)
-    st.pyplot(plt.gcf())
-    
-    ##########################
-    top_instrumental_songs = cleaned_df.nlargest(3, 'instrumentalness_%')[['track_name', 'artist(s)_name', 'instrumentalness_%']]
-    top_instrumental_songs    
+    from sklearn.linear_model import LinearRegression
+    from sklearn.model_selection import train_test_split
+    from sklearn.preprocessing import RobustScaler
+    from sklearn.metrics import mean_squared_error, r2_score
+    from sklearn.metrics import accuracy_score, classification_report
+    from sklearn.decomposition import PCA
+    from sklearn.cluster import KMeans
+    from sklearn.metrics import silhouette_score    
