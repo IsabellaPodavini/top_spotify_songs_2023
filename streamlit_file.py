@@ -40,7 +40,9 @@ def clean_data(df):
     
     # mode
     cleaned_df['in_shazam_charts'] = cleaned_df['in_shazam_charts'].fillna(cleaned_df['in_shazam_charts'].mode()[0], inplace=True)
-    cleaned_df['key'] = cleaned_df['in_shazam_charts'].fillna(cleaned_df['key'].mode()[0], inplace=True)
+    mode_value = cleaned_df['key'].mode()[0]
+    cleaned_df['key'].fillna(mode_value, inplace=True)
+
     
     cleaned_df = cleaned_df[cleaned_df['streams'] !='BPM110KeyAModeMajorDanceability53Valence75Energy69Acousticness7Instrumentalness0Liveness17Speechiness3']
     cleaned_df['streams'] = cleaned_df['streams'].astype('int64')
@@ -184,48 +186,39 @@ elif current_tab == "🔗 Correlation":
 elif current_tab == "📊 Exploratory Data Analysis": 
     st.title("Exploratory Data Analysis")
     
+    st.subheader('Temporal distribution of music')
     st.write('First of all, I offer a complementary view of the temporal distribution of music, exploring both the production and popularity of songs over time.')
     
-    #tab1, tab2 = st.tabs(["Number of songs in each year", "Distribution of Streams in different Months"]) 
+    tab1, tab2 = st.tabs(["Number of songs in each year", "Distribution of Streams in different Months"]) 
     
     cleaned_df = clean_data(spotify_songs_df)
-    
-    st.write('The following graph represents the trend in the number of songs released each year in the dataset. Each bar corresponds to a specific year and its height indicates how many songs were released in that year. This allows us to observe how music production has varied over time, highlighting any trends. By analyzing this graph, we can draw conclusions about the development and evolution of music over time, noting a greater trend in recent years.')
-    count_by_year = cleaned_df['released_year'].value_counts().sort_index()
-    plt.figure(figsize=(10,6))
-    count_by_year.plot(kind='bar', color='orange')
-    plt.title('Number of songs released by year')
-    plt.xlabel('Released year')
-    plt.ylabel('Number of songs')
-    plt.xticks(rotation=45)
-    plt.grid(axis='y', linestyle='--', alpha=0.7) #grid only for axis y, style: fotted line, trasparency: 70%
-    plt.tight_layout() #Automatically adjusts the position of the graph axes so that they do not overlap and the content is evenly distributed
-    st.pyplot(plt.gcf())
+    with tab1:
+        st.write('The following graph represents the trend in the number of songs released each year in the dataset. Each bar corresponds to a specific year and its height indicates how many songs were released in that year. This allows us to observe how music production has varied over time, highlighting any trends. By analyzing this graph, we can draw conclusions about the development and evolution of music over time, noting a greater trend in recent years.')
+        count_by_year = cleaned_df['released_year'].value_counts().sort_index()
+        plt.figure(figsize=(10,6))
+        count_by_year.plot(kind='bar', color='orange')
+        plt.title('Number of songs released by year')
+        plt.xlabel('Released year')
+        plt.ylabel('Number of songs')
+        plt.xticks(rotation=45)
+        plt.grid(axis='y', linestyle='--', alpha=0.7) #grid only for axis y, style: fotted line, trasparency: 70%
+        plt.tight_layout() #Automatically adjusts the position of the graph axes so that they do not overlap and the content is evenly distributed
+        st.pyplot(plt.gcf())
     
     ##############################
-    st.write('We can also examine the distribution of music streams in different months of the year. Using this dataset, this bar graph shows how the number of streams varies according to the month of release. Each bar represents a specific month and its height indicates the average amount of streams received by the songs released in that month. Through this graph, we can identify any seasonality or trends that affect the popularity of songs throughout the year')
-    MonthDict={ 1 : "January",
-            2 : "February",
-            3 : "March",
-            4 : "April",
-            5 : "May",
-            6 : "June",
-            7 : "July",
-            8 : "August",
-            9 : "September",
-           10 : "October",
-           11 : "November",
-           12 : "December"
-        }
-    cleaned_df['month_name'] = cleaned_df['released_month'].map(MonthDict)
-    order = list(MonthDict.values())
-    sns.barplot(x='month_name', y='streams', data=cleaned_df, legend=False)
-    plt.title('Distribution of Streams Across Different Months')
-    plt.xlabel('Month')
-    plt.ylabel('Streams')
-    st.pyplot(plt.gcf())
+    with tab2:
+        st.write('We can also examine the distribution of music streams in different months of the year. Using this dataset, this bar graph shows how the number of streams varies according to the month of release. Each bar represents a specific month and its height indicates the average amount of streams received by the songs released in that month. Through this graph, we can identify any seasonality or trends that affect the popularity of songs throughout the year')
+        count_by_month = cleaned_df['released_month'].value_counts().sort_index()
+        plt.figure(figsize=(10,6))
+        count_by_month.plot(kind='bar', color='lightblue')
+        plt.title('Distribution of Streams Across Different Months')
+        plt.xlabel('Month')
+        plt.ylabel('Streams')
+        st.pyplot(plt.gcf())
     
-    #########################à
+    #########################
+    
+    st.subheader('The top10')
     st.write('The number of artists in this dataset is very large, the top 10 who made a larger number of songs are:')
     artist_counts = cleaned_df['artist(s)_name'].value_counts().head(10)
     plt.figure(figsize=(12,6))
@@ -242,7 +235,7 @@ elif current_tab == "📊 Exploratory Data Analysis":
                sort_values(by = 'streams',ascending=False)
     song_count = song_streamh.head(10)
     plt.figure(figsize=(12,6))
-    sns.barplot(x=song_count.streams,y=song_count.track_name,palette='magma')
+    sns.barplot(x=song_count.streams,y=song_count.track_name,palette='magma', hue=song_count.track_name, dodge=False)
     plt.xlabel('Streams(in billions)')
     plt.ylabel('Track Name')
     plt.title('Top 10 song with most stream hour')
@@ -264,27 +257,41 @@ elif current_tab == "📊 Exploratory Data Analysis":
     st.write('In a song, the maximum number of artists involved is 8 and the minimum number is 1. It can be seen from the graph that most songs involve only one artist.')
     
     ################################
-    st.write('We can now analyze some important tools ')
     
-    #tab1, tab2, tab3, tab4 =st.tabs(["Distribution of BPM", "Distribution of Keys", "Distribution of Mode", "Streams Distribution by Key and Mode"])
-    #with tab1:
-    plt.figure(figsize=(8, 6))
-    sns.histplot(cleaned_df['bpm'], bins=20, kde=True, color='skyblue')
-    plt.xlabel('BPM', fontsize=10)
-    plt.ylabel('Count', fontsize=10)
-    st.pyplot(plt.gcf())
+    st.subheader('BPM, Key and Mode')
+    st.write('We can now analyze some important tools:')
     
-    #with tab2:
-    plt.figure(figsize=(8, 6))
-    sns.countplot(x="key", data=cleaned_df, hue="key", palette="Set2", legend=False)
-    plt.xlabel("Key", fontsize=10)
-    plt.ylabel("Count", fontsize=10)
-    st.pyplot(plt.gcf())
+    tab1, tab2, tab3, tab4 =st.tabs(["Distribution of BPM", "Distribution of Keys", "Distribution of Mode", "Streams Distribution by Key and Mode"])
+    with tab1:
+        plt.figure(figsize=(8, 6))
+        sns.histplot(cleaned_df['bpm'], bins=20, kde=True, color='skyblue')
+        plt.xlabel('BPM', fontsize=10)
+        plt.ylabel('Count', fontsize=10)
+        st.pyplot(plt.gcf())
     
-    #with tab3:
-    cleaned_df['mode'].value_counts().plot.pie(autopct = '%1.2f%%', legend = True);
-    st.pyplot(plt.gcf())
-
+    with tab2:
+        plt.figure(figsize=(8, 6))
+        sns.countplot(x="key", data=cleaned_df, palette="Set2")
+        plt.xlabel("Key", fontsize=10)
+        plt.ylabel("Count", fontsize=10)
+        st.pyplot(plt.gcf())
+        
+        st.write('The key that is most commonly used is C#')
+    
+    with tab3:
+        cleaned_df['mode'].value_counts().plot.pie(autopct = '%1.2f%%', legend = True);
+        st.pyplot(plt.gcf())
+        
+        st.write('The Mode of the song that is most commonly used is Major')
+    
+    with tab4:
+        plt.figure(figsize=(12, 6))
+        sns.boxplot(x='key', y='streams', hue='mode', data=cleaned_df)
+        plt.xlabel('Key')
+        plt.ylabel('Streams')
+        st.pyplot(plt.gcf())
+        
+        st.write('In the graph we see, we have a boxplot representing streaming streams broken down by music key and mode. Each boxplot, colored by mode, allows us to compare the distributions of streams among different keys and modes. Prendendo ad esempio la chiave D, notiamo che la modalità maggiore presenta un box molto più grande rispetto alla modalità minore, indicando una maggiore variabilità nei flussi per la modalità maggiore. Tuttavia, i valori medi dei flussi tra le due modalità sono simili. Questo suggerisce che, sebbene la modalità maggiore abbia una distribuzione più variabile, il numero medio di flussi non differisce significativamente da quello della modalità minore.')
     #############################
     st.divider()
     st.subheader("The musical characteristics")
@@ -404,7 +411,6 @@ elif current_tab == "📊 Exploratory Data Analysis":
     plt.imshow(wordcloud, interpolation='bilinear') 
     plt.axis('off')
     plt.title('Most Common Words in song titles')
-    plt.show()
     st.pyplot(plt.gcf())
     st.write('This graph is a WordCloud, which is a visual way to represent the most frequent words in a given dataset. In this case, the WordCloud was created based on the variable "track_name". This variable contains information about the songs, and the largest words in the are those that appear most frequently in the notes. This can help to quickly identify the most common themes or terms associated with the music.')
 
