@@ -244,6 +244,8 @@ elif current_tab == "📊 Exploratory Data Analysis":
     st.write('The song with highest strems is: Blinding Lights. The song with lowest streams is: Que Vuelvas')
     
     ##############################
+    
+    st.subheader('Number of artists involved in each song')
     st.write('Each song can be played by multiple artists')
     artist_count_counts = cleaned_df['artist_count'].value_counts()
     plt.figure(figsize=(10, 6))
@@ -264,7 +266,7 @@ elif current_tab == "📊 Exploratory Data Analysis":
     tab1, tab2, tab3, tab4 =st.tabs(["Distribution of BPM", "Distribution of Keys", "Distribution of Mode", "Streams Distribution by Key and Mode"])
     with tab1:
         plt.figure(figsize=(8, 6))
-        sns.histplot(cleaned_df['bpm'], bins=20, kde=True, color='skyblue')
+        sns.histplot(cleaned_df['bpm'], bins=20, kde=True, color='lightcoral')
         plt.xlabel('BPM', fontsize=10)
         plt.ylabel('Count', fontsize=10)
         st.pyplot(plt.gcf())
@@ -291,7 +293,7 @@ elif current_tab == "📊 Exploratory Data Analysis":
         plt.ylabel('Streams')
         st.pyplot(plt.gcf())
         
-        st.write('In the graph we see, we have a boxplot representing streaming streams broken down by music key and mode. Each boxplot, colored by mode, allows us to compare the distributions of streams among different keys and modes. Prendendo ad esempio la chiave D, notiamo che la modalità maggiore presenta un box molto più grande rispetto alla modalità minore, indicando una maggiore variabilità nei flussi per la modalità maggiore. Tuttavia, i valori medi dei flussi tra le due modalità sono simili. Questo suggerisce che, sebbene la modalità maggiore abbia una distribuzione più variabile, il numero medio di flussi non differisce significativamente da quello della modalità minore.')
+        st.write('In the graph we see, we have a boxplot representing streaming streams broken down by music key and mode. Each boxplot, colored by mode, allows us to compare the distributions of streams among different keys and modes. Taking key D as an example, we note that the major mode has a much larger box than the minor mode, indicating greater variability in flows for the major mode. However, the average values of the flows between the two modes are similar. This suggests that although the major mode has a more variable distribution, the average number of flows does not differ significantly from that of the minor mode.')
     #############################
     st.divider()
     st.subheader("The musical characteristics")
