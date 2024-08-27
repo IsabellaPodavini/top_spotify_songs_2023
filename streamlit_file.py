@@ -519,8 +519,8 @@ elif current_tab == "🤖 Modeling with ML algorithms":
         st.write('Test to try the maximum number (9) of pca components and then setting 9 as the number of clusters.')
     
     st.divider()
-    st.subheader('Finding the best silhouette coefficient using loops.')
-    st.write('By using a loop, numerous attempts can be made in order to find the number of clusters that maximizes the coefficient. Only a few tests are given below (maximum value N = 900), as the computational power using too high values of N is too much.')
+    st.subheader('Finding the best silhouette coefficient using high values.')
+    st.write('By using a high values, numerous attempts can be made in order to find the number of clusters that maximizes the coefficient. Only a few tests are given below (maximum value N = 900), as the computational power using too high values of N is too much.')
 
     tab1, tab2 = st.tabs(["PCA100", "PCA900"])
 
