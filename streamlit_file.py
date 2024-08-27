@@ -71,7 +71,7 @@ if current_tab == '📄 Introduction':
         st.dataframe(spotify_songs_df.head(15))
         
     
-    st.write('General informations about the DataFrame')
+    st.subheader('General informations about the DataFrame')
     # Creating a buffer to capture information on the Airbnb DataFrame
     buffer = io.StringIO()
     spotify_songs_df.info(buf=buffer)

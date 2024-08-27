@@ -6,10 +6,10 @@ The chosen dataset is available at the following Kaggle's link: https://www.kagg
 
 In the project directory, you can run:
 
-- "project.ipynb" ->  Contains all the cleaning part of the dataset and exploratory data analysis
+- project.ipynb ->  Contains all the cleaning part of the dataset and exploratory data analysis
 
-- "modeling.ipynb" -> Contains the data modeling part 
+- modeling.ipynb -> Contains the data modeling part 
 
-- "streamlit_file.py" -> The project is built using streamlit that runs the presentation in local mode. Open http://localhost:8501/ to view it in the browser.
+- streamlit_file.py -> The project is built using streamlit that runs the presentation in local mode. Open http://localhost:8501/ to view it in the browser.
 
 Author: Isabella Podavini
